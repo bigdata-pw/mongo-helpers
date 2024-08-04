@@ -2,6 +2,14 @@ from pymongo.collection import Collection
 from typing import Any, List, Dict
 
 
+def count_distinct(collection: Collection, field: str) -> int:
+    pipeline = [{"$group": {"_id": f"${field}"}}, {"$count": "distinct_count"}]
+    result = list(collection.aggregate(pipeline))
+    if result:
+        return result[0]["distinct_count"]
+    return 0
+
+
 def find_duplicates(collection: Collection, field: str):
     pipeline = [
         {"$group": {"_id": f"${field}", "count": {"$count": {}}}},
